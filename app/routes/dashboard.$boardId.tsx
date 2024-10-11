@@ -22,7 +22,6 @@ export default function Dashboard() {
         <header className="flex flex-col items-center gap-9">
           <h1 className="leading text-2xl font-bold text-gray-800 dark:text-gray-100">
             Dashboard Screen
-
           </h1>
           <p>Board Id: {" "} {boardId}</p>
         </header>

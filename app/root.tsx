@@ -1,4 +1,6 @@
 import {
+  Link,
+
   Links,
   Meta,
   Outlet,
@@ -6,10 +8,12 @@ import {
   ScrollRestoration,
   useRouteError,
   isRouteErrorResponse,
+  useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 
 import "./tailwind.css";
+import { authCookie } from "./utilities/auth";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -24,7 +28,18 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export async function loader({ request, }: LoaderFunctionArgs){
+  let cookieString = request.headers.get('Cookie');
+  console.log(cookieString)
+  let userId = await authCookie.parse(cookieString)
+  return { userId }
+ 
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+
+  let { userId } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -34,7 +49,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <div>
+            <nav className="h-16 w-full bg-neutral-800 fixed top-0">
+                <div className="h-full flex justify-around items-center">
+                    <div>
+                        <Link to={"/"}>Home</Link>
+                    </div>
+                    <div>
+                        <Link to={"/dashboard"}>Dashboard</Link>
+                    </div>
+                    <div>
+                      {
+                        userId ?
+                          (
+                            <form method="post" action="/logout">
+                              <button className="block text-center">
+                                <span>Log Out</span>
+                              </button>
+                            </form>
+                          ) : (
+                            <Link to={"/login"}>Login/Register</Link>
+                          )
+                      }
+                    </div>
+                </div>
+            </nav>
+            <main className="mt-16">
+                {children}
+            </main>
+        </div>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -43,6 +86,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  
   return <Outlet />;
 }
 

@@ -2,6 +2,7 @@ import { Link, Outlet } from "@remix-run/react";
 
 
 export default function Index(){
+
     return (
         <div>
             <nav className="h-16 w-full bg-neutral-800 fixed top-0">
@@ -17,9 +18,9 @@ export default function Index(){
                     </div>
                 </div>
             </nav>
-            <div className="mt-16">
+            <main className="mt-16">
                 <Outlet />
-            </div>
+            </main>
         </div>
     )
 }
