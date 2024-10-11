@@ -1,0 +1,35 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model Account {
+  id     String  @id @default(uuid())
+  email  String  @unique
+  boards Board[]
+
+  Password Password?
+}
+
+model Password {
+  id        String  @id @default(uuid())
+  salt      String
+  hash      String
+  Account   Account @relation(fields: [accountId], references: [id])
+  accountId String  @unique
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  name      String
+  color     String   @default("#e0e0e0")
+  createdAt DateTime @default(now())
+  Account   Account  @relation(fields: [accountId], references: [id])
+  accountId String
+}

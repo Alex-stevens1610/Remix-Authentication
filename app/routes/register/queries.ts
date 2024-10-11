@@ -1,24 +1,36 @@
-
+import { prisma } from "~/db/prisma";
+import crypto from "crypto"
 
 export async function accountExists(
     email: string,
 ){
-    //DB query, find entry where email field === email
-    //let account = db.findUnique( - where email ==  email)
+    let account = await prisma.account.findUnique({
+        where: {
+            email: email
+        },
+        select: { id: true }
+    })
 
-
-    // return Boolean(account)
+    return Boolean(account)
 }
 
 export async function createAccount(
     email: string,
     password: string,
 ){
+    let salt = crypto.randomBytes(16).toString('hex')
+    let hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha256").toString('hex')
 
-    // db.createEntry({
-    //     id: randomUUID
-    //     email: email,
-    //     password: hash(password)
-    // })
+    return prisma.account.create({
+        data: {
+            email: email,
+            Password: {
+                create: {
+                    salt: salt,
+                    hash: hash,
+                }
+            }
+        }
+    })
 
 }

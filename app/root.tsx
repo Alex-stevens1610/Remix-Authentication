@@ -30,7 +30,6 @@ export const links: LinksFunction = () => [
 
 export async function loader({ request, }: LoaderFunctionArgs){
   let cookieString = request.headers.get('Cookie');
-  console.log(cookieString)
   let userId = await authCookie.parse(cookieString)
   return { userId }
  
